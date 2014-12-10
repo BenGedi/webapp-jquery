@@ -266,6 +266,7 @@ nav div:last-child {
     background-color: inherit;
     box-shadow: 0 0 3px rgba(0,0,0,0.8);
 }
+
 .action-list li {
     padding: 0 20px;
     font-size: .8rem;
