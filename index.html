@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root dire0ctory -->
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+    </head>
+
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <!-- Add your site or application content here -->
+        <header>
+              <div class="layout-wrap">
+                <a href="#" tabindex="0">
+                    netcraft
+                    <img src="https://googledrive.com/host/0B6ZIsommzsgVMVA2MzdKUjN2S0U/logo-netcraft.svg" alt="netcraft">
+                </a>
+
+                <form class="search-box" method="get" action="http://www.google.com">
+                    <input type="search" name="q" placeholder="search" tabindex="0">
+                </form>
+              </div>
+            </header>
+
+            <div class="page-body layout-wrap">
+                <div class="notifications"></div>
+
+                <nav>
+                    <div class="nav-section feature-reports" tabindex="0">
+                        <p>Select<br>Reporting Platform</p>
+
+                        <div class="menu" tabindex="0">
+                            <div class="menu-hint">
+                                <p>Choose QS report</p>
+                                <div class="arrow"></div>
+                            </div>
+
+                            <ul class="action-list">
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="nav-section feature-dashboard" tabindex="0">
+                        <p>Select<br>Dashboard</p>
+
+                        <div class="menu" tabindex="0">
+                            <div class="menu-hint">
+                                <p>Choose dashboard</p>
+                                <div class="arrow"></div>
+                            </div>
+
+                            <ul class="action-list">
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="nav-section feature-help" tabindex="0">
+                        <p>Help<br>&amp; Tutorials</p>
+
+                        <div class="menu" tabindex="0">
+                            <div class="menu-hint">
+                                <p>Choose guide</p>
+                                <div class="arrow"></div>
+                            </div>
+
+                            <ul class="action-list">
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                                <li><a href="#" tabindex="0">link</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="tabs">
+                    <ul>
+                        <li><a class="tab-active" tabindex="0" href="#quick-reports">
+                            <i class="fa fa-external-link"></i> Quick Reports</a>
+                        </li>
+                        <li><a  tabindex="0" href="#fmy-folders">
+                            <i class="fa fa-star-o"></i> My Folders</a>
+                        </li>
+                        <li><a tabindex="0" href="#my-team-folders">
+                            <i class="fa fa-folder-open-o"></i> My Team Folders</a>
+                        </li>
+                        <li><a tabindex="0" href="#public-folders">
+                            <i class="fa fa-file-o"></i> Public Folders</a>
+                        </li>
+                    </ul>
+
+                    <div class="reports-wraper tab" id="tab-quick-reports">
+                        <div class="reports-options">
+                            <select class="bookmarks hidden" name="bookmarks" id="bookmarks-quick-reports" tabindex="0">
+                            </select>
+                            <div class="reports-options-buttons">
+                                <a class="btn-expand hidden" href="#" id="expand-quick-reports" tabindex="0">expand</a>
+                                <button class="btn-settings active" id="btnSettings-quick-reports" tabindex="0">settings</button>
+                            </div>
+                            <div id="settings-quick-reports" class="settings">
+                                <form class="frmSettings" name="frmReportsSettings" id="frmReportsSettings" novalidate>
+                                    <fieldset class="sf-settings">
+                                        <span class="setting--report-num">Reprot 01</span>
+                                        <div class="frmSettings-inputWraper frmName">
+                                            <input class="frmSettings-input js-inputText" type="text" id="nameReport1">
+                                            <label class="frmSettings-label" for="nameReport1">Name</label>
+                                        </div>
+                                        <div class="frmSettings-inputWraper frmUrl">
+                                            <input class="frmSettings-input js-inputUrl" type="url" id="urlReport1">
+                                            <label class="frmSettings-label" for="urlReport1">URL</label>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="sf-settings">
+                                        <span class="setting--report-num">Reprot 02</span>
+                                        <div class="frmSettings-inputWraper frmName">
+                                            <input class="frmSettings-input js-inputText" type="text" id="nameReport2">
+                                            <label class="frmSettings-label" for="nameReport2">Name</label>
+                                        </div>
+                                        <div class="frmSettings-inputWraper frmUrl">
+                                            <input class="frmSettings-input js-inputUrl" type="url" id="urlReport2">
+                                            <label class="frmSettings-label" for="urlReport2">URL</label>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="sf-settings">
+                                        <span class="setting--report-num">Reprot 03</span>
+                                        <div class="frmSettings-inputWraper frmName">
+                                            <input class="frmSettings-input js-inputText" type="text" id="nameReport3">
+                                            <label class="frmSettings-label" for="nameReport3">Name</label>
+                                        </div>
+                                        <div class="frmSettings-inputWraper frmUrl">
+                                            <input class="frmSettings-input js-inputUrl" type="url" id="urlReport3">
+                                            <label class="frmSettings-label" for="urlReport3">URL</label>
+                                        </div>
+                                    </fieldset>
+                                    <div class="frmSettings-footer">
+                                        <a href="#" tabindex="0">Cancel</a>
+                                        <input type="submit" id="submit" value="Save" tabindex="0">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="reports-content hidden" id="content-quick-reports">
+                            <iframe class="iframe" src="" frameborder="0"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="folders-wraper tab hidden" id="tab-fmy-folders">
+                        <div class="reports-options-buttons">
+                            <a class="btn-expand" href="http://www.paulirish.com/" >expand</a>
+                        </div>
+                        <div class="folder-content">
+                            <iframe class="iframe" src="http://www.paulirish.com/" frameborder="0"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="team-folders-wraper tab hidden" id="tab-my-team-folders">
+                        <div class="reports-options">
+
+                            <select class="bookmarks hidden" name="bookmarks" id="bookmarks-my-team-folders">
+                            </select>
+
+                            <div class="reports-options-buttons">
+                                <a class="btn-expand hidden" id="expand-my-team-folders" href="#">expand</a>
+                                <button class="btn-settings active" id="btnSettings-my-team-folders">settings</button>
+                            </div>
+
+                            <div id="settings-my-team-folders" class="settings">
+
+                                <form class="frmSettings" name="frmFolderSettings" id="frmFolderSettings" novalidate>
+
+                                    <fieldset class="sf-settings">
+                                        <span class="setting--report-num">Folder 01</span>
+                                        <div class="frmSettings-inputWraper frmName">
+                                            <input class="frmSettings-input" type="text" id="nameFolder1">
+                                            <label class="frmSettings-label" for="nameFolder1">Name</label>
+                                        </div>
+                                        <div class="frmSettings-inputWraper frmUrl">
+                                            <input class="frmSettings-input" type="url" id="urlFolder">
+                                            <label class="frmSettings-label" for="urlFolder1">URL</label>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset class="sf-settings">
+                                        <span class="setting--report-num">Folder 02</span>
+                                        <div class="frmSettings-inputWraper frmName">
+                                            <input class="frmSettings-input" type="text" id="nameFolder2">
+                                            <label class="frmSettings-label" for="nameFolder2">Name</label>
+                                        </div>
+                                        <div class="frmSettings-inputWraper frmUrl">
+                                            <input class="frmSettings-input" type="url" id="urlFolder2">
+                                            <label class="frmSettings-label" for="urlFolder2">URL</label>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset class="sf-settings">
+                                        <span class="setting--report-num">Folder 03</span>
+                                        <div class="frmSettings-inputWraper frmName">
+                                            <input class="frmSettings-input" type="text" id="nameFolder3">
+                                            <label class="frmSettings-label" for="nameFolder3">Name</label>
+                                        </div>
+                                        <div class="frmSettings-inputWraper frmUrl">
+                                            <input class="frmSettings-input" type="url" id="urlFolder3">
+                                            <label class="frmSettings-label" for="urlFolder3">URL</label>
+                                        </div>
+                                    </fieldset>
+
+                                    <div class="frmSettings-footer">
+                                        <a href="#">Cancel</a>
+                                        <input type="submit" id="submit" value="Save">
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="reports-content hidden" id="content-my-team-folders">
+                            <iframe class="iframe" src="" frameborder="0"></iframe>
+                        </div>
+
+                    </div>
+
+                    <div class="folders-wraper tab hidden" id="tab-public-folders">
+
+                        <div class="reports-options-buttons">
+                            <a class="btn-expand" href="http://www.paulirish.com/" >expand</a>
+                        </div>
+
+                        <div class="folder-content">
+                            <iframe class="iframe" src="http://www.paulirish.com/" frameborder="0"></iframe>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>');</script>
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>
