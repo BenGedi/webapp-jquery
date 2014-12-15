@@ -1,10 +1,11 @@
-/* global UTILS */
-window.onload = (function() {
+/* globals UTILS */
+
+(function($) {
     'use strict';
-    var TabsCollection = UTILS.qsa('.tabs a'),
-        TabsContentCollection = UTILS.qsa('.tab'),
+    var $TabsCollection = $('.tabs li a');
+    var $TabsContentCollection = $('.tab'),
         notification = UTILS.qs('.notifications'),
-        bookmarks = UTILS.qsa('.bookmarks'),
+        bookmarks = $('.bookmarks'),
         btnExpand ,tabContent , inputTypeText , inputTypeUrl,
         arrOption = [],
         storage ={
@@ -15,29 +16,22 @@ window.onload = (function() {
     var forms = UTILS.qsa('.frmSettings');
     var btnSettingTabs = UTILS.qsa('.tab .btn-settings');
 
-    var getActiveTab = function(tabs){
-                    for(var i = 0; i< tabs.length ;i++){
-                        if (tabs[i].classList.contains('tab-active')){
-                            return tabs[i];
+    var getActiveTab = function($tabs){
+                    for(var i = 0; i< $tabs.length ;i++){
+                        if ($tabs.eq(i).hasClass('tab-active')){
+                            return $tabs.eq(i);
                         }
                     }
                 };
 
-    var getActiveTabContent = function(tabsContent){
-            for (var i = 0; i < tabsContent.length; i++) {
-                if(tabsContent[i].classList.contains('hidden')){
+    var getActiveTabContent = function($tabsContent){
+
+            for (var i = 0; i < $tabsContent.length; i++) {
+                if($tabsContent.eq(i).hasClass('hidden')){
                     continue;
                 }
                 else{
-                    return tabsContent[i];
-                }
-            }
-        };
-
-    var getAtagByHash = function(hash){
-            for (var i = 0; i < TabsCollection.length; i++) {
-                if (TabsCollection[i].hash === ('#'+hash)){
-                    return TabsCollection[i];
+                    return $tabsContent.eq(i);
                 }
             }
         };
@@ -75,7 +69,7 @@ window.onload = (function() {
     var selectOptionHandler = function(e){
         e.preventDefault();
         var target = e.target;
-        var currentTabContentId = currentTabContent.id.slice(4);
+        var currentTabContentId = $currentTabContent.id.slice(4);
         var tabContent = UTILS.qs('#content-' + currentTabContentId);
         var contentIframe = tabContent.childNodes[1];
         var optionValue = target.options[target.selectedIndex].value;
@@ -93,7 +87,7 @@ window.onload = (function() {
         var formTarget = e.target;
         inputTypeText = formTarget.querySelectorAll('input[type="text"]');
         inputTypeUrl = formTarget.querySelectorAll('input[type="url"]');
-        var currentTabContentId = currentTabContent.id.slice(4);
+        var currentTabContentId = $currentTabContent.attr('id').slice(4);
         bookmarks = UTILS.qs('#bookmarks-'+ currentTabContentId);
         btnExpand = UTILS.qs('#expand-'+ currentTabContentId);
         tabContent = UTILS.qs('#content-' + currentTabContentId);
@@ -178,6 +172,27 @@ window.onload = (function() {
     };
 
 
+    /*
+    * switchTabs function is activate the tabs
+    *
+    * urlHashId: is url with the id hash of the tab
+    * that we want to be active
+    */
+
+    var switchTabs = function(urlHashId){
+        var urlHash = urlHashId.split('#'),
+            $showTabContent = $('#tab-'+urlHash[1]),
+            // aTag is the tab target
+            $aTag = $('.tabs ul a[href="#'+urlHash[1]+'"]');
+            location.hash = urlHash[1];
+            $aTag.addClass('tab-active');
+            $showTabContent.removeClass('hidden');
+
+            // initialize current tab
+            $currentTab = $aTag;
+            // initialize current tab
+            $currentTabContent = $showTabContent;
+    };
 
     /*
     * checkHash function is adding and removing classes
@@ -188,48 +203,31 @@ window.onload = (function() {
     * 2. addEventListener('hashchange' , checkHash)
     */
     var checkHash = function(e){
-        // if (e.path.length !== 0 || e.newURL !== undefined){
            e.preventDefault();
 
            // variable "that" checking if "e" is a 'click' or 'hashchange' event
-           // yes: that gets window new url.
-           // no: that gets the targeted a tab element.
-           var that = e.newURL ? e.newURL : e.currentTarget.href;
-
+           // yes: that gets window new url. (handle's hashchange event)
+           // no: that gets the target tab element. (handle's click event)
+           var that = e.newURL ? e.newURL : e.target.href;
            var thatHashIndex = that.indexOf('#')+1;
            var hashId = that.slice(thatHashIndex);
-           var targetHashIndex = currentTab.href.indexOf('#')+1;
-           var targetHash = currentTab.href.slice(targetHashIndex);
+           var targetHashIndex = $currentTab.attr('href').indexOf('#')+1;
+           var targetHash = $currentTab.attr('href').slice(targetHashIndex);
 
-           // checking if current tab is the active tab or hash is the same url + #id
+           // checking if current tab is the active tab
            // yes: do nothing and return false.
            // no: continue and change the tab.
-           if ((currentTab === that || that === currentTab.href)||(hashId === targetHash)){
+           if (hashId === targetHash){
                return false;
            }
 
            // remove class active form current tab
-           currentTab.classList.remove('tab-active');
+           $currentTab.removeClass('tab-active');
            // add class hidden to current tab content
-           currentTabContent.classList.add('hidden');
+           $currentTabContent.addClass('hidden');
 
-           if (that.indexOf('#') !== -1) {
-                var clickedHREF = that,
-                clickedView = clickedHREF.split('#'),
-                showTabContent = document.getElementById('tab-'+clickedView[1]),
-                // aTag is the tab target
-                aTag = getAtagByHash(clickedView[1]);
-                location.hash = clickedView[1];
-                // activate target tab
-                aTag.classList.add('tab-active');
-                showTabContent.classList.remove('hidden');
-                currentTab = aTag; // initialize current tab
-                currentTabContent = showTabContent; // initialize current tab
-            }
-        // }
-        else{
-            return false;
-        }
+           // activate the target tab
+           switchTabs(that);
     };
 
     var init = function(){
@@ -244,13 +242,13 @@ window.onload = (function() {
                 UTILS.addEvent(btnSettingTabs[i],'click',settingsBtnCheck);
                 UTILS.addEvent(bookmarks[i],'change',selectOptionHandler);
             }
-            UTILS.addEvent(TabsCollection[i],'click',checkHash);
+            UTILS.addEvent($TabsCollection[i],'click',checkHash);
         }
     };
 
-    var currentTabContent = getActiveTabContent(TabsContentCollection),
-        currentTab = getActiveTab(TabsCollection),
-        currentHash = location.hash;
+    var $currentTabContent = getActiveTabContent($TabsContentCollection),
+        $currentTab = getActiveTab($TabsCollection);
+        // currentHash = location.hash;
     init();
 
     /*================================================
@@ -267,5 +265,5 @@ window.onload = (function() {
             console.log(err);
         }
     });
-})();
+})(jQuery);
 
