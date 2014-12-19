@@ -251,14 +251,12 @@
 
            var locUrl = (e.type === 'hashchange') ? e.target.location.href : e.target.href,
                 targetHashIndex = locUrl.indexOf('#')+1,
-                targetHashId = locUrl.slice(targetHashIndex),
-                currentHashIndex = $currentTab.attr( 'href' ).indexOf('#')+1,
-                currentHash = $currentTab.attr( 'href' ).slice(currentHashIndex);
+                targetHashId = locUrl.slice(targetHashIndex);
 
            // checking if current tab is the active tab
            // yes: do nothing and return false.
            // no: continue and change the tab.
-           if (targetHashId === currentHash){
+           if (targetHashId === currentTabContentId){
                return false;
            }
 
