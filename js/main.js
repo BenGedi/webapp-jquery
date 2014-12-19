@@ -54,7 +54,6 @@
     * switchTabs function is activate the tabs
     *
     *  @param {string} urlHashId - id from the target hash
-    * that we want to be active
     */
     switchTabs = function(urlHashId){
         var $targtTabContent = $( '#tab-' + urlHashId ),
