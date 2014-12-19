@@ -5,7 +5,7 @@
     // functions
     var getActiveTab,getActiveTabContent,settingsBtnCheck,addSelectOption,isUrlValid,checkHash,
     resetInvalidClass,removeSelectOption,selectOptionHandler,formValidation,switchTabs,
-    collectionClassHandler,setIframeAndExpendButton,init;
+    collectionClassHandler,setIframeAndExpendButton,formInputsCheck,init;
 
 
     // elements
@@ -15,7 +15,9 @@
         $bookmarks = $('.bookmarks'),
         $tabContentIframe ,$btnExpand,
         $forms = $( '.frmSettings' ),
-        $btnSettingTabs = $( '.tab .btn-settings' ),
+        $btnSettingTabs = $( '.tab .btn-settings' );
+
+    var emptyfieldsetsCounter,
         storage ={
             quickReports:'',
             myFoleders:''
@@ -25,6 +27,7 @@
     /*================================================
     TABS FUNCTIONS.
     ================================================*/
+
     getActiveTab = function($tabs){
 
         for(var i = 0; i< $tabs.length ;i++){
@@ -53,7 +56,6 @@
     *  @param {string} urlHashId - id from the target hash
     * that we want to be active
     */
-
     switchTabs = function(urlHashId){
         var $targtTabContent = $( '#tab-' + urlHashId ),
                 // aTag is the tab target
@@ -134,37 +136,26 @@
 
     };
 
-    formValidation = function(e){
+    /*
+    * formInputsCheck function check the form inputs
+    *
+    *  @param {collection} $inputsName - collection of all form's name inputs
+    *  @param {collection} $inputsName - collection of all form's url inputs
+    *  @param {element} $bookmark - the select form.
+    */
+    formInputsCheck = function($inputsName, $inputsUrl,$bookmark){
 
-        e.preventDefault();
-
-        // global variables
-        $tabContentIframe = $( '#content-' + currentTabContentId+' iframe' );
-        $btnExpand = $('#expand-' + currentTabContentId);
-
-        var formTarget = e.target,
-            $bookmark = $( '#bookmarks-' + currentTabContentId ).eq(0),
-            $SettingButton = $( '#btnSettings-'+currentTabContentId ),
-            $inputTypeText = $( formTarget.querySelectorAll( 'input[type="text"]' ) ),
-            $inputTypeUrl = $( formTarget.querySelectorAll( 'input[type="url"]' ) ),
-            emptyfieldsetsCounter = 0, nameVal , urlVal,
-            // arrToBeActive: is for elements that needs to be active
-            arrToBeActive = [$bookmark , $btnExpand , $tabContentIframe.parent()];
-
-        // checking if the select has options
-        if($bookmark.children().length > 0){
-            removeSelectOption($bookmark,$inputTypeUrl);
-        }
+        var nameVal , urlVal;
 
         // loop going over the inputs
-        for (var i = 0; i < $inputTypeText.length; i++) {
+        for (var i = 0; i < $inputsName.length; i++) {
 
-            urlVal = $inputTypeUrl.eq(i).val();
-            nameVal = $inputTypeText.eq(i).val();
+            urlVal = $inputsUrl.eq(i).val();
+            nameVal = $inputsName.eq(i).val();
 
             // checking url validation
             if(urlVal !== '' && !isUrlValid(urlVal)){
-                $inputTypeUrl.eq(i).val('');
+                $inputsUrl.eq(i).val('');
                 urlVal = '';
             }
 
@@ -172,12 +163,12 @@
             // checking inputs value
             if(nameVal !== '' && urlVal === '' ){
 
-                $inputTypeUrl.eq(i).addClass( 'invalid' );
+                $inputsUrl.eq(i).addClass( 'invalid' );
                 continue;
 
             }else if (nameVal === '' && urlVal !== '' ) {
 
-                $inputTypeText.eq(i).addClass( 'invalid' );
+                $inputsName.eq(i).addClass( 'invalid' );
                 continue;
 
             }else if(nameVal !== '' && urlVal !== ''){
@@ -190,17 +181,41 @@
             }
 
             // reset inputs with invalid class
-            resetInvalidClass( $inputTypeText.eq(i) );
-            resetInvalidClass( $inputTypeUrl.eq(i) );
+            resetInvalidClass( $inputsName.eq(i) );
+            resetInvalidClass( $inputsUrl.eq(i) );
 
         }// end for
+    };
+
+    formValidation = function(e){
+
+        e.preventDefault();
+
+        // global variables
+        $tabContentIframe = $( '#content-' + currentTabContentId+' iframe' );
+        $btnExpand = $('#expand-' + currentTabContentId);
+        emptyfieldsetsCounter = 0;
+
+        var formTarget = e.target,
+            $bookmark = $( '#bookmarks-' + currentTabContentId ).eq(0),
+            $SettingButton = $( '#btnSettings-'+currentTabContentId ),
+            $inputTypeText = $( formTarget.querySelectorAll( 'input[type="text"]' ) ),
+            $inputTypeUrl = $( formTarget.querySelectorAll( 'input[type="url"]' ) ),
+            // arrToBeActive: is for elements that needs to be active
+            arrToBeActive = [$bookmark , $btnExpand , $tabContentIframe.parent()];
+
+        // checking if the select has options
+        if($bookmark.children().length > 0){
+            removeSelectOption($bookmark,$inputTypeUrl);
+        }
+
+        formInputsCheck( $inputTypeText , $inputTypeUrl , $bookmark);
 
         // checking if there is any invalid inputs
         if(formTarget.querySelector( 'input[type="url"].invalid' )){
             formTarget.querySelector( 'input[type="url"].invalid' ).focus();
             return false;
         }
-
         // if 'emptyfieldsetsCounter' equal to 3 then all form's inputs are empty
         else if(emptyfieldsetsCounter === 3){
 
@@ -210,7 +225,6 @@
                 // form is not valid
                 return false;
         }
-
         // form is valid
         else{
 
