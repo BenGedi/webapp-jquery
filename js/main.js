@@ -255,9 +255,9 @@
     * checkHash function is adding and removing classes
     * for activate "a" tabs and relevant divs
     *
-    * There is 2 ways that checkHash is running:
-    * 1. addEventListener('click' , checkHash)
-    * 2. addEventListener('hashchange' , checkHash)
+    * checkHash is running on 2 events:
+    * 1. 'click' event
+    * 2. 'hashchange' event
     */
     checkHash = function(e){
 
