@@ -190,7 +190,7 @@ input[name="q"] {
     padding: 16px;
 }
 
-.notifications,nav,fieldset.sf-settings {
+.notifications,nav,fieldset.fs-settings {
     margin-bottom: 16px;
 }
 
@@ -229,7 +229,7 @@ nav div:last-child {
     margin-right:0;
 }
 
-.menu, .tab, .iframe , fieldset.sf-settings{
+.menu, .tab, .iframe , fieldset.fs-settings{
     width: 100%;
 }
 .menu {
@@ -421,7 +421,7 @@ form[name~="frmSettings"] {
     position: relative;
 }
 
-fieldset.sf-settings {
+fieldset.fs-settings {
     position: relative;
     height: 46px;
     background-color: #DCDADA;

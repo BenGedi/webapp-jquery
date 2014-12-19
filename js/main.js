@@ -2,175 +2,50 @@
 
 (function($) {
     'use strict';
+    // functions
+    var getActiveTab,getActiveTabContent,settingsBtnCheck,addSelectOption,isUrlValid,checkHash,
+    resetInvalidClass,removeSelectOption,selectOptionHandler,formValidation,switchTabs,
+    collectionClassHandler,init;
+
+
+    // elements
     var $TabsCollection = $('.tabs li a');
     var $TabsContentCollection = $('.tab'),
-        notification = UTILS.qs('.notifications'),
-        bookmarks = $('.bookmarks'),
-        btnExpand ,tabContent , inputTypeText , inputTypeUrl,
-        arrOption = [],
+        $notification = $('.notifications'),
+        $bookmarks = $('.bookmarks'),
+        $tabContentIframe ,$btnExpand,
         storage ={
             quickReports:'',
             myFoleders:''
         };
 
-    var forms = UTILS.qsa('.frmSettings');
-    var btnSettingTabs = UTILS.qsa('.tab .btn-settings');
+    var $forms = $( '.frmSettings' );
+    var $btnSettingTabs = $( '.tab .btn-settings' );
 
-    var getActiveTab = function($tabs){
-                    for(var i = 0; i< $tabs.length ;i++){
-                        if ($tabs.eq(i).hasClass('tab-active')){
-                            return $tabs.eq(i);
-                        }
-                    }
-                };
+    /*================================================
+    TABS FUNCTIONS.
+    ================================================*/
+    getActiveTab = function($tabs){
 
-    var getActiveTabContent = function($tabsContent){
-
-            for (var i = 0; i < $tabsContent.length; i++) {
-                if($tabsContent.eq(i).hasClass('hidden')){
-                    continue;
-                }
-                else{
-                    return $tabsContent.eq(i);
-                }
+        for(var i = 0; i< $tabs.length ;i++){
+            if ($tabs.eq(i).hasClass( 'tab-active' )){
+                return $tabs.eq(i);
             }
-        };
-
-    var settingsBtnCheck = function(e){
-        var target = e.target;
-        var btnSettingsId = target.id.slice(12);
-        var hasActive = UTILS.hasClass(target,'active');
-        var setting = UTILS.qs('#settings-'+btnSettingsId);
-        if(hasActive){
-            target.classList.remove('active');
-            setting.classList.add('hidden');
-        }
-        else {
-            target.classList.add('active');
-            setting.classList.remove('hidden');
-        }
-    };
-
-    var addOptionToSelect = function(selectElement ,name,url){
-        var option = document.createElement('OPTION');
-        option.setAttribute('value',url);
-        arrOption.unshift(url);
-        option.innerText = name;
-        selectElement.appendChild(option);
-    };
-
-    var removeChildsElements = function(myNode){
-        while (myNode.firstChild) {
-            myNode.removeChild(myNode.firstChild);
-            arrOption.pop();
-        }
-    };
-
-    var selectOptionHandler = function(e){
-        e.preventDefault();
-        var target = e.target;
-        var currentTabContentId = $currentTabContent.id.slice(4);
-        var tabContent = UTILS.qs('#content-' + currentTabContentId);
-        var contentIframe = tabContent.childNodes[1];
-        var optionValue = target.options[target.selectedIndex].value;
-        contentIframe.setAttribute('src' , optionValue);
-        UTILS.qs('#expand-'+currentTabContentId).setAttribute('href', optionValue);
-    };
-
-    var isUrlValid = function(str){
-        var re = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-zA-Z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
-        return re.test(str);
-    };
-
-    var formValidation = function(e){
-        e.preventDefault();
-        var formTarget = e.target;
-        inputTypeText = formTarget.querySelectorAll('input[type="text"]');
-        inputTypeUrl = formTarget.querySelectorAll('input[type="url"]');
-        var currentTabContentId = $currentTabContent.attr('id').slice(4);
-        bookmarks = UTILS.qs('#bookmarks-'+ currentTabContentId);
-        btnExpand = UTILS.qs('#expand-'+ currentTabContentId);
-        tabContent = UTILS.qs('#content-' + currentTabContentId);
-        var SettingButton = UTILS.qs('#btnSettings-'+currentTabContentId);
-        var emptyfieldsetsCounter = 0;
-        var arrToBeActive = [bookmarks,btnExpand,tabContent];
-
-        //ben: 'arrInvalidFieldset' can be done by qs of the class invalid.
-        var arrInvalidFieldset =[];
-        if(bookmarks.childNodes.length > 1){
-            removeChildsElements(bookmarks);
         }
 
-        for (var i = 0; i < inputTypeText.length; i++) {
+    };
 
-            // checking url validation
-            if(inputTypeUrl[i].value !== '' && !isUrlValid(inputTypeUrl[i].value)){
-                    inputTypeUrl[i].value = '';
-            }
+    getActiveTabContent = function($tabsContent){
 
-            var url = inputTypeUrl[i].value;
-            var name = inputTypeText[i].value;
-            if(name !== '' && url === '' ){
-                UTILS.addClass(inputTypeUrl[i],'invalid');
-                // adding to invalid input to arr
-                arrInvalidFieldset.push(inputTypeUrl[i]);
+        for (var i = 0; i < $tabsContent.length; i++) {
+            if($tabsContent.eq(i).hasClass( 'hidden' )){
                 continue;
             }
-            else if (name === '' && url !== '' ) {
-                UTILS.addClass(inputTypeText[i],'invalid');
-                // adding to invalid input to arr
-                arrInvalidFieldset.push(inputTypeText[i]);
-                continue;
-            }
-            else if(inputTypeText[i].value !== '' && inputTypeUrl[i].value !== ''){
-                addOptionToSelect(bookmarks , inputTypeText[i].value , inputTypeUrl[i].value);
-            }
             else{
-                emptyfieldsetsCounter++;
+                return $tabsContent.eq(i);
             }
-            if (UTILS.hasClass(inputTypeText[i] ,'invalid')){
-                UTILS.removeClass(inputTypeText[i] ,'invalid');
-            }
-            if (UTILS.hasClass(inputTypeUrl[i] ,'invalid')){
-                UTILS.removeClass(inputTypeUrl[i] ,'invalid');
-            }
-        }
-        // checking if there is an invalid fieldset (one of the inputs is empty and the other is not)
-        if(arrInvalidFieldset.length !==0){
-            arrInvalidFieldset[0].focus();
-            return false;
-        }
-        else if(emptyfieldsetsCounter === 3){
-                // activeate all tab's relevant elements
-                for (var j = 0; j < arrToBeActive.length; j++) {
-                    UTILS.addClass(arrToBeActive[j] , 'hidden');
-                }
-                return false;
-        }
-        else{
-            UTILS.emitEvent(SettingButton,'click',settingsBtnCheck);
-            if(UTILS.hasClass(bookmarks , 'hidden')){
-                for (var k = 0; k < arrToBeActive.length; k++) {
-                    UTILS.removeClass(arrToBeActive[k] , 'hidden');
-                }
-            }
-            bookmarks.focus();
-
-            // when the 'bookmarks' (select) is trigger for the first time it is empty and it may holds a text node
-            // type inside of it, so this 'if' condition checking if the first child is a text or element type and
-            // then passing the src to the iframe.
-            if(bookmarks.childNodes[0].nodeType === 1){
-                tabContent.childNodes[1].setAttribute('src',bookmarks.childNodes[0].value);
-                btnExpand.setAttribute('href' , bookmarks.childNodes[0].value);
-            }
-            else{
-                tabContent.childNodes[1].setAttribute('src',bookmarks.childNodes[1].value);
-                btnExpand.setAttribute('href' , bookmarks.childNodes[1].value);
-            }
-            return true;
         }
     };
-
 
     /*
     * switchTabs function is activate the tabs
@@ -179,20 +54,178 @@
     * that we want to be active
     */
 
-    var switchTabs = function(urlHashId){
-        var urlHash = urlHashId.split('#'),
-            $showTabContent = $('#tab-'+urlHash[1]),
-            // aTag is the tab target
-            $aTag = $('.tabs ul a[href="#'+urlHash[1]+'"]');
-            location.hash = urlHash[1];
+    switchTabs = function(urlHashId){
+        var $showTabContent = $('#tab-'+urlHashId),
+                // aTag is the tab target
+                $aTag = $('.tabs ul a[href="#'+urlHashId+'"]');
+
+            location.hash = urlHashId;
             $aTag.addClass('tab-active');
             $showTabContent.removeClass('hidden');
 
-            // initialize current tab
+            // initialize current tab (a)
             $currentTab = $aTag;
-            // initialize current tab
+            // initialize current tab content (div)
             $currentTabContent = $showTabContent;
+            // initialize current tab content id
+            currentTabContentId = urlHashId;
     };
+
+    /*================================================
+    HELPER FUNCTIONS.
+    ================================================*/
+
+    resetInvalidClass = function($node){
+        if ($node.hasClass( 'invalid' )){
+            $node.removeClass( 'invalid' );
+        }
+    };
+
+    collectionClassHandler = function(node,cls){
+        for (var j = 0; j < node.length; j++) {
+            node[j].toggleClass(cls);
+        }
+    };
+
+    /*================================================
+    FORM FUNCTIONS.
+    ================================================*/
+
+    settingsBtnCheck = function(e){
+        var $target = $( e.target ),
+        $setting = $( '#settings-' + currentTabContentId );
+        $target.toggleClass( 'active' );
+        $setting.toggleClass( 'hidden' );
+    };
+
+    addSelectOption = function($selectElement ,name,url){
+        var $option = $( '<option></option>' );
+        $option.attr( 'value',url );
+        $option.text( name );
+        $selectElement.append( $option );
+    };
+
+    removeSelectOption = function($myNode){
+
+        while ($myNode.eq(0).children().length > 0) {
+            $myNode.eq(0).find( 'option:first' ).remove();
+        }
+
+    };
+
+    selectOptionHandler = function(e){
+        e.preventDefault();
+        var target = e.target;
+        var optionValue = target.options[target.selectedIndex].value;
+        $tabContentIframe.attr('src' , optionValue);
+        $btnExpand.attr('href', optionValue);
+    };
+
+    isUrlValid = function(str){
+        var re = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-zA-Z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+        return re.test(str);
+    };
+
+    formValidation = function(e){
+
+        e.preventDefault();
+        // global variables
+        $tabContentIframe = $( '#content-' + currentTabContentId+' iframe' );
+        $btnExpand = $('#expand-' + currentTabContentId);
+
+        var formTarget = e.target,
+            $bookmark = $('#bookmarks-' + currentTabContentId).eq(0),
+            $SettingButton = $('#btnSettings-'+currentTabContentId),
+            $inputTypeText = $(formTarget.querySelectorAll( 'input[type="text"]' )),
+            $inputTypeUrl = $(formTarget.querySelectorAll( 'input[type="url"]' )),
+            emptyfieldsetsCounter = 0, nameVal , urlVal,
+            // arrToBeActive: is for elements that needs to be active
+            arrToBeActive = [$bookmark , $btnExpand , $tabContentIframe.parent()];
+
+        if($bookmark.children().length > 0){
+            removeSelectOption($bookmark,$inputTypeUrl);
+        }
+
+        for (var i = 0; i < $inputTypeText.length; i++) {
+
+            urlVal = $inputTypeUrl.eq(i).val();
+            nameVal = $inputTypeText.eq(i).val();
+
+            // checking url validation
+            if(urlVal !== '' && !isUrlValid(urlVal)){
+                $inputTypeUrl.eq(i).val('');
+                urlVal = '';
+            }
+
+            // checking inputs value
+            if(nameVal !== '' && urlVal === '' ){
+
+                $inputTypeUrl.eq(i).addClass( 'invalid' );
+                continue;
+
+            }else if (nameVal === '' && urlVal !== '' ) {
+
+                $inputTypeText.eq(i).addClass( 'invalid' );
+                continue;
+
+            }else if(nameVal !== '' && urlVal !== ''){
+
+                addSelectOption($bookmark , nameVal, urlVal);
+
+            }else{// both inputs are empty
+
+                emptyfieldsetsCounter++;
+
+            }
+
+            // reset inputs with invalid class
+            resetInvalidClass($inputTypeText.eq(i));
+            resetInvalidClass($inputTypeUrl.eq(i));
+
+        }// end for
+
+        // checking if there is any invalid inputs
+        if(formTarget.querySelector('input[type="url"].invalid')){
+            formTarget.querySelector('input[type="url"].invalid').focus();
+            return false;
+        }
+
+        // if 'emptyfieldsetsCounter' equal to 3 then all form's inputs are empty
+        else if(emptyfieldsetsCounter === 3){
+
+                // add class hidden to all relevet elements
+                // arrToBeActive: this is arr with all relavant elements
+                collectionClassHandler( arrToBeActive , 'hidden' );
+
+                // form is not valid
+                return false;
+        }
+
+        // form is valid
+        else{
+
+            if($bookmark.hasClass( 'hidden' )){
+
+                collectionClassHandler(arrToBeActive,'hidden');
+
+            }
+
+            $bookmark.focus();
+
+            // insert the value of the first option to the iframe and expand button
+            var firstOptionVal = $bookmark.children(0).attr('value');
+
+            $tabContentIframe[0].setAttribute('src', firstOptionVal);
+            $btnExpand[0].setAttribute('href' , firstOptionVal);
+            $SettingButton.click();
+            return true;
+        }
+    };
+
+
+    /*================================================
+    HASH FUNCTION.
+    ================================================*/
 
     /*
     * checkHash function is adding and removing classes
@@ -202,22 +235,18 @@
     * 1. addEventListener('click' , checkHash)
     * 2. addEventListener('hashchange' , checkHash)
     */
-    var checkHash = function(e){
+    checkHash = function(e){
            e.preventDefault();
-
-           // variable "that" checking if "e" is a 'click' or 'hashchange' event
-           // yes: that gets window new url. (handle's hashchange event)
-           // no: that gets the target tab element. (handle's click event)
-           var that = e.newURL ? e.newURL : e.target.href;
-           var thatHashIndex = that.indexOf('#')+1;
-           var hashId = that.slice(thatHashIndex);
-           var targetHashIndex = $currentTab.attr('href').indexOf('#')+1;
-           var targetHash = $currentTab.attr('href').slice(targetHashIndex);
+           var locUrl = (e.type === 'hashchange') ? e.target.location.href : e.target.href,
+                targetHashIndex = locUrl.indexOf('#')+1,
+                targetHashId = locUrl.slice(targetHashIndex),
+                currentHashIndex = $currentTab.attr('href').indexOf('#')+1,
+                currentHash = $currentTab.attr('href').slice(currentHashIndex);
 
            // checking if current tab is the active tab
            // yes: do nothing and return false.
            // no: continue and change the tab.
-           if (hashId === targetHash){
+           if (targetHashId === currentHash){
                return false;
            }
 
@@ -227,28 +256,30 @@
            $currentTabContent.addClass('hidden');
 
            // activate the target tab
-           switchTabs(that);
+           switchTabs(targetHashId);
     };
 
-    var init = function(){
-        // UTILS.addEvent(document.getElementById('btn-settings'),'click',settingsBtnCheck);
-        UTILS.addEvent(window,'hashchange',checkHash);
-        UTILS.addClass(notification,'hidden');
+    init = function(){
+
+        $(window).bind('hashchange',checkHash);
+        $notification.addClass('hidden');
         localStorage.setItem('tabs',JSON.stringify(storage));
 
         for (var i = 0; i < 4; i++) {
             if(i<2){
-                UTILS.addEvent(forms[i],'submit',formValidation);
-                UTILS.addEvent(btnSettingTabs[i],'click',settingsBtnCheck);
-                UTILS.addEvent(bookmarks[i],'change',selectOptionHandler);
+                $forms.eq(i).submit(formValidation);
+                $btnSettingTabs.eq(i).click(settingsBtnCheck);
+                $bookmarks.eq(i).change(selectOptionHandler);
             }
-            UTILS.addEvent($TabsCollection[i],'click',checkHash);
+            $TabsCollection.eq(i).click(checkHash);
         }
     };
 
+    // initialize tab elements
     var $currentTabContent = getActiveTabContent($TabsContentCollection),
-        $currentTab = getActiveTab($TabsCollection);
-        // currentHash = location.hash;
+        $currentTab = getActiveTab($TabsCollection),
+        currentTabContentId = $currentTabContent[0].id.slice(4);
+
     init();
 
     /*================================================
@@ -258,8 +289,8 @@
     // Display an ajax notification using UTILS.ajax.
     UTILS.ajax('../data/notification.txt', {
         done: function(response) {
-            notification.classList.remove('hidden');
-            notification.innerHTML = response;
+            $notification.removeClass('hidden');
+            $notification.html(response);
         },
         fail: function(err){
             console.log(err);
