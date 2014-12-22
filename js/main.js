@@ -3,7 +3,7 @@
     'use strict';
     // functions declaration
     var getActiveTab,getActiveTabContent,settingsBtnHandler,addSelectOption,setHttp,
-        isUrlValid,tabsEventHandler,resetInvalidClass,removeSelectOption,
+        isUrlValid,tabsEventHandler,removeInvalidClass,removeSelectOption,
         selectOptionHandler,formValidation,switchTabs,collectionClassHandler,
         setIframeAndExpendButton,formInputsHandler,initTabs,init;
 
@@ -93,14 +93,7 @@
     HELPER FUNCTIONS.
     ================================================*/
 
-    /**
-     * resetInvalidClass checking if an element has invalid class
-     * and remove it.
-     *
-     * @param  {element} node - Node
-     */
-
-    resetInvalidClass = function($elm){
+    removeInvalidClass = function($elm){
         if ($elm.hasClass( 'invalid' )){
             $elm.removeClass( 'invalid' );
         }
@@ -243,8 +236,8 @@
                 }
 
             // reset inputs with invalid class
-            resetInvalidClass( $inputsName.eq(i) );
-            resetInvalidClass( $inputsUrl.eq(i) );
+            removeInvalidClass( $inputsName.eq(i) );
+            removeInvalidClass( $inputsUrl.eq(i) );
 
         }// end for
     };
@@ -258,10 +251,10 @@
         $btnExpand = $('#expand-' + currentTabContentId);
         emptyfieldsetsCounter = 0;
 
-        var formTarget = e.target,
+        var $formTarget = $(e.target),
             $bookmark = $( '#bookmarks-' + currentTabContentId ).eq(0),
-            $inputTypeText = $( formTarget.querySelectorAll( 'input[type="text"]' ) ),
-            $inputTypeUrl = $( formTarget.querySelectorAll( 'input[type="url"]' ) ),
+            $inputTypeText = $formTarget.find('input[type="text"]'),
+            $inputTypeUrl = $formTarget.find('input[type="url"]'),
             // arrToBeActive: is for elements that needs to be active
             arrToBeActive = [$bookmark , $btnExpand , $tabContentIframe.parent()];
 
@@ -274,8 +267,8 @@
         formInputsHandler( $inputTypeText , $inputTypeUrl , $bookmark);
 
         // checking if the form has any invalid inputs
-        if(formTarget.querySelector( 'input[type="url"].invalid' )){
-            formTarget.querySelector( 'input[type="url"].invalid' ).focus();
+        if($formTarget.find('input.invalid').length>0){
+            $formTarget.find('input.invalid').eq(0).focus();
             return false;
         }
         // if their is not invalid inputs then check if the all inputs are empty
