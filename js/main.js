@@ -314,7 +314,7 @@
         // initialize ajax
         $.ajax({
 
-            url: '../data/notification.txt',
+            url: '../webapp-jquery/data/notification.txt',
             dataType: 'text'
 
         })
