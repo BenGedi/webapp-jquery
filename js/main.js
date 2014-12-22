@@ -319,11 +319,13 @@
 
         })
         .done(function (response) {
-
+            console.log(response);
             var $message = $('.notifications').eq(0);
             if (response && response !== '') {
+                console.log('in the ajax if');
                 $message.removeClass('hidden');
                 $message.text(response);
+                console.log($message);
             }
         });
     };
