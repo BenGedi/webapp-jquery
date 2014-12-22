@@ -272,37 +272,36 @@
 
         // checking if the form has any invalid inputs
         if($formTarget.find('input.invalid').length>0){
-            $formTarget.find('input.invalid').eq(0).focus();
-            return false;
-        }
-        // if their is not invalid inputs then check if the all inputs are empty
-        else if(emptyfieldsetsCounter === 3){
+                $formTarget.find('input.invalid').eq(0).focus();
+                return false;
+            }
+            // if their is not invalid inputs then check if the all inputs are empty
+            else if(emptyfieldsetsCounter === 3){
 
                 // add hidden class to all relevet elements
                 collectionClassHandler( arrToBeActive , 'hidden' );
-
-                // form is not valid
                 return false;
-        }
-        // form is valid
-        else{
-
-            if($bookmark.hasClass( 'hidden' )){
-
-                // remove hidden class from all relevet elements
-                collectionClassHandler(arrToBeActive,'hidden');
             }
+            // form is valid
+            else{
+                // checking if select is hidden
+                // (if true, then the expend button and iframe is hidden too)
+                if($bookmark.hasClass( 'hidden' )){
 
-            $bookmark.focus();
+                    // remove hidden class from all relevet elements
+                    collectionClassHandler(arrToBeActive,'hidden');
+                }
 
-            var firstOptionVal = $bookmark.children(0).attr( 'value' );
+                $bookmark.focus();
 
-            // insert the value of the first option to the iframe and expand button
-            setIframeAndExpendButton(firstOptionVal);
-            // close the settings button
-            $( '#btnSettings-'+currentTabContentId ).click();
-            return true;
-        }
+                var firstOptionVal = $bookmark.children(0).attr( 'value' );
+
+                // insert the value of the first option to the iframe and expand button
+                setIframeAndExpendButton(firstOptionVal);
+                // close the settings button
+                $( '#btnSettings-'+currentTabContentId ).click();
+                return true;
+            }
     };
 
 
