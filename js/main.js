@@ -112,16 +112,27 @@
         }
     };
 
-    /*================================================
-    FORM FUNCTIONS.
-    ================================================*/
-
     settingsBtnHandler = function(e){
         var $target = $( e.target ),
         $setting = $( '#settings-' + currentTabContentId );
         $target.toggleClass( 'active' );
         $setting.toggleClass( 'hidden' );
     };
+
+    /**
+     * setIframeAndExpendButton set the src iframe and the expend button
+     * with the target url value
+     *
+     * @param  {string} val - target url
+     */
+    setIframeAndExpendButton = function(val){
+        $tabContentIframe.attr( 'src' , val );
+        $btnExpand.attr( 'href', val );
+    };
+
+    /*================================================
+    SELECT FUNCTIONS.
+    ================================================*/
 
     /**
      * addSelectOption is creating the options for the select element
@@ -138,6 +149,15 @@
         $selectElement.append( $option );
     };
 
+    selectOptionHandler = function(e){
+
+        e.preventDefault();
+        var target = e.target;
+        var optionValue = target.options[target.selectedIndex].value;
+
+        setIframeAndExpendButton( optionValue );
+    };
+
     /**
      * removeSelectOption remove options from the select element
      *
@@ -151,25 +171,9 @@
 
     };
 
-    /**
-     * setIframeAndExpendButton set the src iframe and the expend button
-     * with the target url value
-     *
-     * @param  {string} val - target url
-     */
-    setIframeAndExpendButton = function(val){
-        $tabContentIframe.attr( 'src' , val );
-        $btnExpand.attr( 'href', val );
-    };
-
-    selectOptionHandler = function(e){
-
-        e.preventDefault();
-        var target = e.target;
-        var optionValue = target.options[target.selectedIndex].value;
-
-        setIframeAndExpendButton( optionValue );
-    };
+    /*================================================
+    FORM FUNCTIONS.
+    ================================================*/
 
     isUrlValid = function(str){
 
