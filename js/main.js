@@ -1,22 +1,26 @@
 
 (function($) {
     'use strict';
-    // functions
-    var getActiveTab,getActiveTabContent,settingsBtnCheck,addSelectOption,setHttp,isUrlValid,tabsHandler,
-    resetInvalidClass,removeSelectOption,selectOptionHandler,formValidation,switchTabs,
-    collectionClassHandler,setIframeAndExpendButton,formInputsHandler,init;
+    // functions declaration
+    var getActiveTab,getActiveTabContent,settingsBtnHandler,addSelectOption,setHttp,
+        isUrlValid,tabsEventHandler,resetInvalidClass,removeSelectOption,
+        selectOptionHandler,formValidation,switchTabs,collectionClassHandler,
+        setIframeAndExpendButton,formInputsHandler,initTabs,init;
 
-
-    // elements
+    // elements declaration
     var $TabsCollection = $('.tabs li a'),
         $TabsContentCollection = $('.tab'),
-        $notification = $('.notifications'),
+        $notification = $('.notifications').eq(0),
         $bookmarks = $('.bookmarks'),
         $tabContentIframe ,$btnExpand,
         $forms = $( '.frmSettings' ),
-        $btnSettingTabs = $( '.tab .btn-settings' );
+        $btnSettingTabs = $( '.tab .btn-settings' ),
+        $currentTabContent,
+        $currentTab;
 
+    // variables declaration
     var emptyfieldsetsCounter,
+        currentTabContentId,
         storage ={
             quickReports:'',
             myFoleders:''
@@ -50,37 +54,65 @@
     };
 
     /*
+    * initTabs function update the current tab global variables
+    *
+    *  @param {element} tab - anchor tab.
+    *  @param {element} tabContent - tab content.
+    *  @param {string} tabContentId - tab content id.
+    */
+    initTabs = function($tab ,$tabContent,tabContentId){
+        $currentTab = $tab;
+        $currentTabContent = $tabContent;
+        currentTabContentId = tabContentId ? tabContentId : $currentTabContent[0].id.slice(4);
+    };
+
+    /*
     * switchTabs function is activate the tabs
     *
     *  @param {string} urlHashId - id from the target hash
     */
     switchTabs = function(urlHashId){
+
+        // $aTag is the tab target
+
         var $targtTabContent = $( '#tab-' + urlHashId ),
-                // aTag is the tab target
-                $aTag = $( '.tabs ul a[href="#'+urlHashId+'"]' );
+            $aTag = $( '.tabs ul a[href="#'+urlHashId+'"]' );
 
-            location.hash = urlHashId;
-            $aTag.addClass('tab-active');
-            $targtTabContent.removeClass('hidden');
+        // remove class active form current tab
+        $currentTab.removeClass( 'tab-active');
+        // add class hidden to current tab content
+        $currentTabContent.addClass( 'hidden' );
 
-            // initialize current tab (a)
-            $currentTab = $aTag;
-            // initialize current tab content (div)
-            $currentTabContent = $targtTabContent;
-            // initialize current tab content id
-            currentTabContentId = urlHashId;
+        location.hash = urlHashId;
+        $aTag.addClass('tab-active');
+        $targtTabContent.removeClass('hidden');
+        initTabs($aTag,$targtTabContent,urlHashId);
     };
 
     /*================================================
     HELPER FUNCTIONS.
     ================================================*/
 
-    resetInvalidClass = function($node){
-        if ($node.hasClass( 'invalid' )){
-            $node.removeClass( 'invalid' );
+    /**
+     * resetInvalidClass checking if an element has invalid class
+     * and remove it.
+     *
+     * @param  {element} node - Node
+     */
+
+    resetInvalidClass = function($elm){
+        if ($elm.hasClass( 'invalid' )){
+            $elm.removeClass( 'invalid' );
         }
     };
 
+    /**
+     * collectionClassHandler is add or remove a class from
+     * arr of node elements
+     *
+     * @param  {Array} node - Array of jQuery node elemet
+     * @param  {String} cls - Class name
+     */
     collectionClassHandler = function(node,cls){
         for (var j = 0; j < node.length; j++) {
             node[j].toggleClass(cls);
@@ -91,13 +123,20 @@
     FORM FUNCTIONS.
     ================================================*/
 
-    settingsBtnCheck = function(e){
+    settingsBtnHandler = function(e){
         var $target = $( e.target ),
         $setting = $( '#settings-' + currentTabContentId );
         $target.toggleClass( 'active' );
         $setting.toggleClass( 'hidden' );
     };
 
+    /**
+     * addSelectOption is creating the options for the select element
+     *
+     * @param  {node element} selectElement - Select node element
+     * @param  {String} name - option text.
+     * @param  {String} url - url from the option value.
+     */
     addSelectOption = function($selectElement ,name,url){
         var $option = $( '<option></option>' );
         url = setHttp(url);
@@ -106,14 +145,25 @@
         $selectElement.append( $option );
     };
 
-    removeSelectOption = function($myNode){
+    /**
+     * removeSelectOption remove options from the select element
+     *
+     * @param  {node element} selectElement - Select node element
+     */
+    removeSelectOption = function($selectElement){
 
-        while ($myNode.eq(0).children().length > 0) {
-            $myNode.eq(0).find( 'option:first' ).remove();
+        while ($selectElement.eq(0).children().length > 0) {
+            $selectElement.eq(0).find( 'option:first' ).remove();
         }
 
     };
 
+    /**
+     * setIframeAndExpendButton set the src iframe and the expend button
+     * with the target url value
+     *
+     * @param  {string} val - target url
+     */
     setIframeAndExpendButton = function(val){
         $tabContentIframe.attr( 'src' , val );
         $btnExpand.attr( 'href', val );
@@ -157,7 +207,6 @@
 
         var nameVal , urlVal;
 
-        // loop going over the inputs
         for (var i = 0; i < $inputsName.length; i++) {
 
             urlVal = $inputsUrl.eq(i).val();
@@ -189,6 +238,7 @@
                 }
                 else{// both inputs are empty
 
+                    // counting the amount of empty fieldsets
                     emptyfieldsetsCounter++;
                 }
 
@@ -210,7 +260,6 @@
 
         var formTarget = e.target,
             $bookmark = $( '#bookmarks-' + currentTabContentId ).eq(0),
-            $SettingButton = $( '#btnSettings-'+currentTabContentId ),
             $inputTypeText = $( formTarget.querySelectorAll( 'input[type="text"]' ) ),
             $inputTypeUrl = $( formTarget.querySelectorAll( 'input[type="url"]' ) ),
             // arrToBeActive: is for elements that needs to be active
@@ -221,10 +270,10 @@
             removeSelectOption($bookmark,$inputTypeUrl);
         }
 
-        // checking the inputs values and if they are valid add them to the select option
+        // checking the inputs values and if they are valid add them to the select element
         formInputsHandler( $inputTypeText , $inputTypeUrl , $bookmark);
 
-        // checking if there is any invalid inputs
+        // checking if the form has any invalid inputs
         if(formTarget.querySelector( 'input[type="url"].invalid' )){
             formTarget.querySelector( 'input[type="url"].invalid' ).focus();
             return false;
@@ -245,16 +294,16 @@
 
                 // remove hidden class from all relevet elements
                 collectionClassHandler(arrToBeActive,'hidden');
-
             }
 
             $bookmark.focus();
 
-            // insert the value of the first option to the iframe and expand button
             var firstOptionVal = $bookmark.children(0).attr( 'value' );
 
+            // insert the value of the first option to the iframe and expand button
             setIframeAndExpendButton(firstOptionVal);
-            $SettingButton.click();
+            // close the settings button
+            $( '#btnSettings-'+currentTabContentId ).click();
             return true;
         }
     };
@@ -265,14 +314,14 @@
     ================================================*/
 
     /*
-    * tabsHandler function is adding and removing classes
+    * tabsEventHandler function is adding and removing classes
     * for activate "a" tag tabs and their relevant divs
     *
-    * tabsHandler is running on 2 events:
+    * tabsEventHandler is running on 2 events:
     * 1. 'click' event
     * 2. 'hashchange' event
     */
-    tabsHandler = function(e){
+    tabsEventHandler = function(e){
 
            e.preventDefault();
 
@@ -287,18 +336,13 @@
                return false;
            }
 
-           // remove class active form current tab
-           $currentTab.removeClass( 'tab-active');
-           // add class hidden to current tab content
-           $currentTabContent.addClass( 'hidden' );
-
            // activate the target tab by id
            switchTabs(targetHashId);
     };
 
     init = function(){
 
-        $(window).bind( 'hashchange' , tabsHandler );
+        $(window).bind( 'hashchange' , tabsEventHandler );
         $notification.addClass( 'hidden' );
         localStorage.setItem( 'tabs' , JSON.stringify(storage) );
 
@@ -306,12 +350,16 @@
         for (var i = 0; i < 4; i++) {
             if(i<2){
                 $forms.eq(i).submit( formValidation );
-                $btnSettingTabs.eq(i).click( settingsBtnCheck );
+                $btnSettingTabs.eq(i).click( settingsBtnHandler );
                 $bookmarks.eq(i).change( selectOptionHandler );
             }
-            $TabsCollection.eq(i).click( tabsHandler );
+            $TabsCollection.eq(i).click( tabsEventHandler );
         }
-        // initialize ajax
+
+        // initialize tab elements
+        initTabs(getActiveTab( $TabsCollection ) , getActiveTabContent( $TabsContentCollection ));
+
+        // Display an ajax notification
         $.ajax({
 
             url: '../webapp-jquery/data/notification.txt',
@@ -320,36 +368,18 @@
         })
         .done(function (response) {
             console.log(response);
-            var $message = $('.notifications').eq(0);
             if (response && response !== '') {
-                console.log('in the ajax if');
-                $message.removeClass('hidden');
-                $message.text(response);
-                console.log($message);
+                $notification.removeClass('hidden');
+                $notification.text(response);
             }
+        })
+        .fail(function(error){
+            $notification.removeClass('hidden');
+            $notification.text(error);
         });
     };
 
-    // initialize tab elements
-    var $currentTabContent = getActiveTabContent( $TabsContentCollection ),
-        $currentTab = getActiveTab( $TabsCollection ),
-        currentTabContentId = $currentTabContent[0].id.slice(4);
 
     init();
-
-    /*================================================
-    AJAX NOTIFICATION.
-    ================================================*/
-
-    // Display an ajax notification using UTILS.ajax.
-    // UTILS.ajax('../data/notification.txt', {
-    //     done: function(response) {
-    //         $notification.removeClass('hidden');
-    //         $notification.html(response);
-    //     },
-    //     fail: function(err){
-    //         console.log(err);
-    //     }
-    // });
 })(jQuery);
 
