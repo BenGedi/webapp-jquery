@@ -100,6 +100,7 @@
 
     addSelectOption = function($selectElement ,name,url){
         var $option = $( '<option></option>' );
+        url = setHttp(url);
         $option.attr( 'value',url );
         $option.text( name );
         $selectElement.append( $option );
@@ -133,16 +134,15 @@
         return re.test(str);
 
     };
-    setHttp = function($url) {
-            var re = /^(https?:\/\/)/i,
-            url = $url[0];
+    setHttp = function(url) {
+            var re = /^(https?:\/\/www.)/i;
 
-            if (re.test(url.value)) {
-                url.value = url.value.toLowerCase();
-                return;
+            if (re.test(url)) {
+
+                return url.toLowerCase();
             }
             else {
-                url.value = 'http://' + url.value.toLowerCase();
+                return 'http://www.' + url.toLowerCase();
             }
         };
 
@@ -319,8 +319,10 @@
 
         })
         .done(function (response) {
+
             var $message = $('.notifications').eq(0);
             if (response && response !== '') {
+                $message.removeClass('hidden');
                 $message.text(response);
             }
         });
