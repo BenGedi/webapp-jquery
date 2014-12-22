@@ -154,7 +154,6 @@
         e.preventDefault();
         var target = e.target;
         var optionValue = target.options[target.selectedIndex].value;
-
         setIframeAndExpendButton( optionValue );
     };
 
@@ -264,7 +263,7 @@
 
         // checking if the select has options
         if($bookmark.children().length > 0){
-            removeSelectOption($bookmark,$inputTypeUrl);
+                removeSelectOption($bookmark,$inputTypeUrl);
         }
 
         // checking the inputs values and if they are valid add them to the select element
@@ -284,6 +283,7 @@
             }
             // form is valid
             else{
+
                 // checking if select is hidden
                 // (if true, then the expend button and iframe is hidden too)
                 if($bookmark.hasClass( 'hidden' )){
@@ -296,10 +296,12 @@
 
                 var firstOptionVal = $bookmark.children(0).attr( 'value' );
 
-                // insert the value of the first option to the iframe and expand button
+                // setting the value of the first option to the iframe and expand button
                 setIframeAndExpendButton(firstOptionVal);
-                // close the settings button
-                $( '#btnSettings-'+currentTabContentId ).click();
+
+                // close the settings tab button
+                $('#btnSettings-'+currentTabContentId).click();
+
                 return true;
             }
     };
