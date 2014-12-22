@@ -1,11 +1,10 @@
-/* globals UTILS */
 
 (function($) {
     'use strict';
     // functions
-    var getActiveTab,getActiveTabContent,settingsBtnCheck,addSelectOption,isUrlValid,checkHash,
+    var getActiveTab,getActiveTabContent,settingsBtnCheck,addSelectOption,setHttp,isUrlValid,tabsHandler,
     resetInvalidClass,removeSelectOption,selectOptionHandler,formValidation,switchTabs,
-    collectionClassHandler,setIframeAndExpendButton,formInputsCheck,init;
+    collectionClassHandler,setIframeAndExpendButton,formInputsHandler,init;
 
 
     // elements
@@ -134,15 +133,27 @@
         return re.test(str);
 
     };
+    setHttp = function($url) {
+            var re = /^(https?:\/\/)/i,
+            url = $url[0];
+
+            if (re.test(url.value)) {
+                url.value = url.value.toLowerCase();
+                return;
+            }
+            else {
+                url.value = 'http://' + url.value.toLowerCase();
+            }
+        };
 
     /*
-    * formInputsCheck function check the form inputs
+    * formInputsHandler function check the form inputs
     *
     *  @param {collection} $inputsName - collection of all form's name inputs
     *  @param {collection} $inputsName - collection of all form's url inputs
-    *  @param {element} $bookmark - the select form.
+    *  @param {element} $bookmark - the form select element.
     */
-    formInputsCheck = function($inputsName, $inputsUrl,$bookmark){
+    formInputsHandler = function($inputsName, $inputsUrl,$bookmark){
 
         var nameVal , urlVal;
 
@@ -158,26 +169,28 @@
                 urlVal = '';
             }
 
-
             // checking inputs value
             if(nameVal !== '' && urlVal === '' ){
 
-                $inputsUrl.eq(i).addClass( 'invalid' );
-                continue;
+                    $inputsUrl.eq(i).addClass( 'invalid' );
+                    continue;
 
-            }else if (nameVal === '' && urlVal !== '' ) {
+                }
+                else if (nameVal === '' && urlVal !== '' ) {
 
-                $inputsName.eq(i).addClass( 'invalid' );
-                continue;
+                    $inputsName.eq(i).addClass( 'invalid' );
+                    continue;
 
-            }else if(nameVal !== '' && urlVal !== ''){
+                }// if both inputs not empty
+                else if(nameVal !== '' && urlVal !== ''){
 
-                addSelectOption($bookmark , nameVal, urlVal);
+                    addSelectOption($bookmark , nameVal, urlVal);
 
-            }else{// both inputs are empty
+                }
+                else{// both inputs are empty
 
-                emptyfieldsetsCounter++;
-            }
+                    emptyfieldsetsCounter++;
+                }
 
             // reset inputs with invalid class
             resetInvalidClass( $inputsName.eq(i) );
@@ -208,14 +221,15 @@
             removeSelectOption($bookmark,$inputTypeUrl);
         }
 
-        formInputsCheck( $inputTypeText , $inputTypeUrl , $bookmark);
+        // checking the inputs values and if they are valid add them to the select option
+        formInputsHandler( $inputTypeText , $inputTypeUrl , $bookmark);
 
         // checking if there is any invalid inputs
         if(formTarget.querySelector( 'input[type="url"].invalid' )){
             formTarget.querySelector( 'input[type="url"].invalid' ).focus();
             return false;
         }
-        // if 'emptyfieldsetsCounter' equal to 3 then all form's inputs are empty
+        // if their is not invalid inputs then check if the all inputs are empty
         else if(emptyfieldsetsCounter === 3){
 
                 // add hidden class to all relevet elements
@@ -251,14 +265,14 @@
     ================================================*/
 
     /*
-    * checkHash function is adding and removing classes
-    * for activate "a" tabs and relevant divs
+    * tabsHandler function is adding and removing classes
+    * for activate "a" tag tabs and their relevant divs
     *
-    * checkHash is running on 2 events:
+    * tabsHandler is running on 2 events:
     * 1. 'click' event
     * 2. 'hashchange' event
     */
-    checkHash = function(e){
+    tabsHandler = function(e){
 
            e.preventDefault();
 
@@ -284,18 +298,32 @@
 
     init = function(){
 
-        $(window).bind( 'hashchange' , checkHash );
+        $(window).bind( 'hashchange' , tabsHandler );
         $notification.addClass( 'hidden' );
         localStorage.setItem( 'tabs' , JSON.stringify(storage) );
 
+        // initialize events
         for (var i = 0; i < 4; i++) {
             if(i<2){
                 $forms.eq(i).submit( formValidation );
                 $btnSettingTabs.eq(i).click( settingsBtnCheck );
                 $bookmarks.eq(i).change( selectOptionHandler );
             }
-            $TabsCollection.eq(i).click( checkHash );
+            $TabsCollection.eq(i).click( tabsHandler );
         }
+        // initialize ajax
+        $.ajax({
+
+            url: '../data/notification.txt',
+            dataType: 'text'
+
+        })
+        .done(function (response) {
+            var $message = $('.notifications').eq(0);
+            if (response && response !== '') {
+                $message.text(response);
+            }
+        });
     };
 
     // initialize tab elements
@@ -310,14 +338,14 @@
     ================================================*/
 
     // Display an ajax notification using UTILS.ajax.
-    UTILS.ajax('../data/notification.txt', {
-        done: function(response) {
-            $notification.removeClass('hidden');
-            $notification.html(response);
-        },
-        fail: function(err){
-            console.log(err);
-        }
-    });
+    // UTILS.ajax('../data/notification.txt', {
+    //     done: function(response) {
+    //         $notification.removeClass('hidden');
+    //         $notification.html(response);
+    //     },
+    //     fail: function(err){
+    //         console.log(err);
+    //     }
+    // });
 })(jQuery);
 
