@@ -4,3 +4,5 @@
 # Compiled source #
 ###################
 *.exe
+
+node_modules
