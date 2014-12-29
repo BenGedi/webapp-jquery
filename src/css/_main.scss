@@ -112,7 +112,7 @@ html{
 }
 
 body {
-    background: url(../img/body-background.jpg) no-repeat center center fixed;
+    background: url(../../img/body-background.jpg) no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -301,13 +301,13 @@ nav div:last-child {
     margin-top: 10px;
 }
 .feature-reports{
-    background-image: url(../img/icons/action-report-new.png);
+    background-image: url(../../img/icons/action-report-new.png);
 }
 .feature-dashboard{
-    background-image: url(../img/icons/action-report-top.png);
+    background-image: url(../../img/icons/action-report-top.png);
 }
 .feature-help{
-    background-image: url(../img/icons/actions-help.png);
+    background-image: url(../../img/icons/actions-help.png);
 }
 .tabs ul{
     height: 50px;
@@ -364,11 +364,11 @@ nav div:last-child {
     z-index: 1;
 }
 .reports-options-buttons a.btn-expand {
-    background-image: url(../img/icons/expand.png);
+    background-image: url(../../img/icons/expand.png);
     right: 40px;
 }
 .reports-options-buttons button.btn-settings {
-    background-image: url(../img/icons/settings.png);
+    background-image: url(../../img/icons/settings.png);
     right: 0;
     border: none;
 }

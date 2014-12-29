@@ -360,7 +360,7 @@
         // Display an ajax notification
         $.ajax({
 
-            url: '../webapp-jquery/data/notification.txt',
+            url: 'data/notification.txt',
             dataType: 'text'
 
         })
