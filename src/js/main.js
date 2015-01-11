@@ -5,7 +5,7 @@
     var getActiveTab,getActiveTabContent,settingsBtnHandler,addSelectOption,setHttp,
         isUrlValid,tabsEventHandler,removeInvalidClass,removeSelectOption,
         selectOptionHandler,formValidation,switchTabs,collectionClassHandler,
-        setIframeAndExpendButton,formInputsHandler,initTabs,init;
+        setIframeAndExpendButton,formInputsHandler,initTabs,importData,exportData,init;
 
     // elements declaration
     var $TabsCollection = $('.tabs li a'),
@@ -20,11 +20,7 @@
 
     // variables declaration
     var emptyfieldsetsCounter,
-        currentTabContentId,
-        storage ={
-            quickReports:'',
-            myFoleders:''
-        };
+        currentTabContentId;
 
 
     /*================================================
@@ -38,7 +34,6 @@
                 return $tabs.eq(i);
             }
         }
-
     };
 
     getActiveTabContent = function($tabsContent){
@@ -64,6 +59,7 @@
         $currentTab = $tab;
         $currentTabContent = $tabContent;
         currentTabContentId = tabContentId ? tabContentId : $currentTabContent[0].id.slice(4);
+        // exportData();
     };
 
     /*
@@ -74,7 +70,6 @@
     switchTabs = function(urlHashId){
 
         // $aTag is the tab target
-
         var $targtTabContent = $( '#tab-' + urlHashId ),
             $aTag = $( '.tabs ul a[href="#'+urlHashId+'"]' );
 
@@ -107,14 +102,16 @@
      * @param  {String} cls - Class name
      */
     collectionClassHandler = function(node,cls){
-        for (var j = 0; j < node.length; j++) {
-            node[j].toggleClass(cls);
-        }
+
+        $.each(node,function(key,val){
+            val.toggleClass(cls);
+        });
     };
 
     settingsBtnHandler = function(e){
         var $target = $( e.target ),
         $setting = $( '#settings-' + currentTabContentId );
+
         $target.toggleClass( 'active' );
         $setting.toggleClass( 'hidden' );
     };
@@ -197,7 +194,7 @@
     *
     *  @param {collection} $inputsName - collection of all form's name inputs
     *  @param {collection} $inputsName - collection of all form's url inputs
-    *  @param {element} $bookmark - the form select element.
+    *  @param {element} $bookmark - form select element.
     */
     formInputsHandler = function($inputsName, $inputsUrl,$bookmark){
 
@@ -261,6 +258,7 @@
             // arrToBeActive: is for elements that needs to be active
             arrToBeActive = [$bookmark , $btnExpand , $tabContentIframe.parent()];
 
+
         // checking if the select has options
         if($bookmark.children().length > 0){
                 removeSelectOption($bookmark,$inputTypeUrl);
@@ -302,9 +300,111 @@
                 // close the settings tab button
                 $('#btnSettings-'+currentTabContentId).click();
 
+                importData();
                 return true;
             }
     };
+
+    /*================================================
+    STORAGE FUNCTION.
+    ================================================*/
+    importData = function(){
+        if (Modernizr.localstorage) {
+
+            var $tabs = $('[data-js="formTab"]'),
+                    data = [];
+
+                    console.log($tabs);
+
+            $.each($tabs , function(index, val){
+                console.log(index);
+                console.log(val);
+                    var $tab = $(val),
+                        formHtml = $tab.html(),
+                        $inputs = $tab.find('.frmSettings-input'),
+                        selectedIndex = $tab.find('select')[0].selectedIndex,
+                        formValues = [];
+
+
+                    for (var j = 0; j < $inputs.length; j++) {
+
+                        var input = $inputs[j];
+                        console.log('$inputs[j]');
+                        console.log(input);
+                        console.log('$inputs[j].value');
+                        console.log(input.value);
+                        formValues.push(input.value);
+                        console.log('formValues');
+                         console.log(formValues);
+                    }
+                    console.log('$tab');
+                    console.log($tab);
+                    console.log('formHtml');
+                    console.log(formHtml);
+                    console.log('$inputs');
+                    console.log($inputs);
+                    console.log('selectedIndex');
+                    console.log(selectedIndex);
+
+                    data[val] = [formHtml, selectedIndex, formValues];
+                    console.log('data[val]');
+                    console.log(data[val]);
+                    console.log('data');
+                    console.log(data);
+            });
+            console.log('JSON.stringify(data)');
+            console.log(JSON.stringify(data));
+            localStorage.setItem('data', JSON.stringify(data));
+
+        }
+    };
+
+    exportData = function(){
+        if (Modernizr.localstorage) {
+            if (localStorage.getItem('data')) {
+                var $tabs = $('[data-js="formTab"]'),
+                    data;
+
+                try {
+                    data = JSON.parse(localStorage.getItem('data'));
+                } catch(e) {
+                    console.log(e);
+                    return false;
+                }
+
+                for (var i = 0; i < data.length; i++) {
+                    var dataset = data[i],
+                        formHtml = dataset[0],
+                        index = dataset[1],
+                        val = dataset[2],
+                        value,
+                        $tab = $tabs.eq(i),
+                        $inputs,
+                        $select,
+                        $iframe,
+                        $button;
+
+                    $tab.html(formHtml);
+                    $inputs = $tab.find('.frmSettings-input');
+
+                    for (var j = 0; j < $inputs.length; j++) {
+                        $inputs[j].value = val[j];
+                    }
+
+                    $select = $tab.find('select');
+                    $select[0].selectedIndex = index;
+                    if (index > -1) {
+                        value = $select[0].options[$select[0].selectedIndex].value;
+                        $iframe = $tab.find('iframe');
+                        $iframe.attr('src', value);
+                        $button = $tab.find('.to-website');
+                        $button.attr('href', value);
+                    }
+                }
+            }
+        }
+    };
+
 
 
     /*================================================
@@ -313,9 +413,9 @@
 
     /*
     * tabsEventHandler function is adding and removing classes
-    * for activate "a" tag tabs and their relevant divs
+    * for activate "a" tag tabs and their relevant divs content
     *
-    * tabsEventHandler is running on 2 events:
+    * tabsEventHandler is Handles 2 events:
     * 1. 'click' event
     * 2. 'hashchange' event
     */
@@ -342,7 +442,6 @@
 
         $(window).bind( 'hashchange' , tabsEventHandler );
         $notification.addClass( 'hidden' );
-        localStorage.setItem( 'tabs' , JSON.stringify(storage) );
 
         // initialize events
         for (var i = 0; i < 4; i++) {
@@ -353,6 +452,9 @@
             }
             $TabsCollection.eq(i).click( tabsEventHandler );
         }
+
+        // exportData();
+
 
         // initialize tab elements
         initTabs(getActiveTab( $TabsCollection ) , getActiveTabContent( $TabsContentCollection ));
@@ -365,7 +467,6 @@
 
         })
         .done(function (response) {
-            console.log(response);
             if (response && response !== '') {
                 $notification.removeClass('hidden');
                 $notification.text(response);
