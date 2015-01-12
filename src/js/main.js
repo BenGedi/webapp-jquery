@@ -5,7 +5,8 @@
     var getActiveTab,getActiveTabContent,settingsBtnHandler,addSelectOption,setHttp,
         isUrlValid,tabsEventHandler,removeInvalidClass,removeSelectOption,
         selectOptionHandler,formValidation,switchTabs,collectionClassHandler,
-        setIframeAndExpendButton,formInputsHandler,initTabs,importData,exportData,init;
+        setIframeAndExpendButton,formInputsHandler,initTabs,importData,exportData,init,initEvent;
+
 
     // elements declaration
     var $TabsCollection = $('.tabs li a'),
@@ -20,7 +21,8 @@
 
     // variables declaration
     var emptyfieldsetsCounter,
-        currentTabContentId;
+        currentTabContentId,
+        dataObj = {};
 
 
     /*================================================
@@ -59,7 +61,6 @@
         $currentTab = $tab;
         $currentTabContent = $tabContent;
         currentTabContentId = tabContentId ? tabContentId : $currentTabContent[0].id.slice(4);
-        // exportData();
     };
 
     /*
@@ -311,94 +312,78 @@
     importData = function(){
         if (Modernizr.localstorage) {
 
-            var $tabs = $('[data-js="formTab"]'),
-                    data = [];
+            // $tabs holds the 2 forms (quick-reports,my-foledr)
+            var $tabs = $('[data-js="formTab"]');
 
-                    console.log($tabs);
+
 
             $.each($tabs , function(index, val){
-                console.log(index);
-                console.log(val);
-                    var $tab = $(val),
-                        formHtml = $tab.html(),
-                        $inputs = $tab.find('.frmSettings-input'),
-                        selectedIndex = $tab.find('select')[0].selectedIndex,
-                        formValues = [];
 
+                var prop = val.id.slice(4).replace(/-/g,'');
 
-                    for (var j = 0; j < $inputs.length; j++) {
+                var $tab = $(val),
+                    formHtml = $tab.html(),
+                    $inputs = $tab.find('.frmSettings-input'),
+                    selectedIndex = $tab.find('select')[0].selectedIndex,
+                    formValues = [];
 
-                        var input = $inputs[j];
-                        console.log('$inputs[j]');
-                        console.log(input);
-                        console.log('$inputs[j].value');
-                        console.log(input.value);
-                        formValues.push(input.value);
-                        console.log('formValues');
-                         console.log(formValues);
-                    }
-                    console.log('$tab');
-                    console.log($tab);
-                    console.log('formHtml');
-                    console.log(formHtml);
-                    console.log('$inputs');
-                    console.log($inputs);
-                    console.log('selectedIndex');
-                    console.log(selectedIndex);
+                for (var j = 0; j < $inputs.length; j++) {
 
-                    data[val] = [formHtml, selectedIndex, formValues];
-                    console.log('data[val]');
-                    console.log(data[val]);
-                    console.log('data');
-                    console.log(data);
+                    var input = $inputs[j];
+                    formValues.push(input.value);
+                }
+
+                dataObj[prop] = [formHtml, selectedIndex, formValues,currentTabContentId];
+
             });
-            console.log('JSON.stringify(data)');
-            console.log(JSON.stringify(data));
-            localStorage.setItem('data', JSON.stringify(data));
-
+            localStorage.setItem('dataObj', JSON.stringify(dataObj));
         }
     };
 
     exportData = function(){
         if (Modernizr.localstorage) {
-            if (localStorage.getItem('data')) {
+            if (localStorage.getItem('dataObj')) {
+
                 var $tabs = $('[data-js="formTab"]'),
-                    data;
+                    data,i=0;
 
                 try {
-                    data = JSON.parse(localStorage.getItem('data'));
+                    data = JSON.parse(localStorage.getItem('dataObj'));
                 } catch(e) {
                     console.log(e);
                     return false;
                 }
+                for (var prop in data) {
+                    if(data.hasOwnProperty(prop)){
+                        var dataset = data[prop],
+                            formHtml = dataset[0],
+                            index = dataset[1],
+                            val = dataset[2],
+                            id = dataset[3],
+                            value,
+                            $tab = $tabs.eq(i++),
+                            $inputs,
+                            $select,
+                            $iframe,
+                            $expand;
 
-                for (var i = 0; i < data.length; i++) {
-                    var dataset = data[i],
-                        formHtml = dataset[0],
-                        index = dataset[1],
-                        val = dataset[2],
-                        value,
-                        $tab = $tabs.eq(i),
-                        $inputs,
-                        $select,
-                        $iframe,
-                        $button;
+                        $tab.html(formHtml);
+                        $inputs = $tab.find('.frmSettings-input');
 
-                    $tab.html(formHtml);
-                    $inputs = $tab.find('.frmSettings-input');
+                        for (var j = 0; j < $inputs.length; j++) {
+                            $inputs[j].value = val[j];
+                        }
 
-                    for (var j = 0; j < $inputs.length; j++) {
-                        $inputs[j].value = val[j];
-                    }
+                        $select = $tab.find('select');
 
-                    $select = $tab.find('select');
-                    $select[0].selectedIndex = index;
-                    if (index > -1) {
-                        value = $select[0].options[$select[0].selectedIndex].value;
-                        $iframe = $tab.find('iframe');
-                        $iframe.attr('src', value);
-                        $button = $tab.find('.to-website');
-                        $button.attr('href', value);
+                        $select[0].selectedIndex = index;
+                        if (index > -1) {
+                            value = $select[0].options[$select[0].selectedIndex].value;
+                            $iframe = $tab.find('iframe');
+                            $iframe.attr('src', value);
+                            $expand = $tab.find('#expand-'+id);
+                            $expand.attr('href', value);
+                        }
                     }
                 }
             }
@@ -438,12 +423,7 @@
            switchTabs(targetHashId);
     };
 
-    init = function(){
-
-        $(window).bind( 'hashchange' , tabsEventHandler );
-        $notification.addClass( 'hidden' );
-
-        // initialize events
+    initEvent = function(){
         for (var i = 0; i < 4; i++) {
             if(i<2){
                 $forms.eq(i).submit( formValidation );
@@ -452,9 +432,14 @@
             }
             $TabsCollection.eq(i).click( tabsEventHandler );
         }
+    };
 
-        // exportData();
-
+    init = function(){
+        $(window).bind( 'hashchange' , tabsEventHandler );
+        $notification.addClass( 'hidden' );
+        exportData();
+        // initialize events
+        initEvent();
 
         // initialize tab elements
         initTabs(getActiveTab( $TabsCollection ) , getActiveTabContent( $TabsContentCollection ));
