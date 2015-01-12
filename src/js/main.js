@@ -313,28 +313,31 @@ $(function() {
         if (Modernizr.localstorage) {
 
             // $tabs holds the 2 forms (quick-reports,my-foledr)
-            var $tabs = $('[data-js="formTab"]');
-
+            var $tabs = $('[data-js="formTab"]'),arrText=[],arrUrl =[];
+            // $bookmark = $( '#bookmarks-' + currentTabContentId ).eq(0);
 
 
             $.each($tabs , function(index, val){
 
-                var prop = val.id.slice(4).replace(/-/g,'');
+                var prop = val.id.slice(4).replace(/-/g,''),
+                    formValues,
+                    $tab = $(val),
+                    $inputTypeText = $tab.find('input[type="text"]'),
+                    $inputTypeUrl = $tab.find('input[type="url"]');
 
-                var $tab = $(val),
-                    formHtml = $tab.html(),
-                    $inputs = $tab.find('.frmSettings-input'),
-                    selectedIndex = $tab.find('select')[0].selectedIndex,
-                    formValues = [];
 
-                for (var j = 0; j < $inputs.length; j++) {
+                    for (var i = 0; i < $inputTypeText.length; i++) {
+                        arrText.push($inputTypeText.eq(i).val());
+                        console.log($inputTypeText.eq(i).val());
+                        arrUrl.push($inputTypeUrl.eq(i).val());
+                        console.log($inputTypeUrl.eq(i).val());
+                    }
 
-                    var input = $inputs[j];
-                    formValues.push(input.value);
-                }
+                formValues = [arrText, arrUrl];
 
-                dataObj[prop] = [formHtml, selectedIndex, formValues,currentTabContentId];
-
+                dataObj[prop] = formValues;
+                arrText = [];
+                arrUrl = [];
             });
             localStorage.setItem('dataObj', JSON.stringify(dataObj));
         }
@@ -356,36 +359,22 @@ $(function() {
                 for (var prop in data) {
                     if(data.hasOwnProperty(prop)){
                         var dataset = data[prop],
-                            formHtml = dataset[0],
-                            index = dataset[1],
-                            val = dataset[2],
-                            id = dataset[3],
-                            value,
+                            text =dataset[0],
+                            url = dataset[1],
                             $tab = $tabs.eq(i++),
-                            $inputs,
-                            $select,
-                            $iframe,
-                            $expand;
+                            $formTexts = $tab.find('input[type="text"]'),
+                            $formUrls = $tab.find('input[type="url"]');
 
-                        $tab.html(formHtml);
-                        $inputs = $tab.find('.frmSettings-input');
+                        for (var j = 0; j < text.length; j++) {
 
-                        for (var j = 0; j < $inputs.length; j++) {
-                            $inputs[j].value = val[j];
+                            $formTexts.eq(j).val(text[j]);
+                            $formUrls.eq(j).val(url[j]);
                         }
 
-                        $select = $tab.find('select');
-
-                        $select[0].selectedIndex = index;
-                        if (index > -1) {
-                            value = $select[0].options[$select[0].selectedIndex].value;
-                            $iframe = $tab.find('iframe');
-                            $iframe.attr('src', value);
-                            $expand = $tab.find('#expand-'+id);
-                            $expand.attr('href', value);
-                        }
+                        // $tab.eq(i++).submit();
                     }
                 }
+
             }
         }
     };
