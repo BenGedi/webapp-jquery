@@ -18,7 +18,8 @@ $(function() {
         $btnSettingTabs = $( '.tab .btn-settings' ),
         $currentTabContent,
         $currentTab,
-        $search = $('[role="search"]');
+        $search = $('[role="search"]'),
+        $cancel = $('.frmSettings-footer a');
 
     // variables declaration
     var emptyfieldsetsCounter,
@@ -278,8 +279,10 @@ $(function() {
             else if(emptyfieldsetsCounter === 3){
 
                 // add hidden class to all relevet elements
+                if($bookmark.hasClass('hidden')){
+                    return false;
+                }
                 collectionClassHandler( arrToBeActive , 'hidden' );
-                return false;
             }
             // form is valid
             else{
@@ -386,15 +389,9 @@ $(function() {
     ================================================*/
 
     searchHandler = function(e){
-        e.preventDefault();
-        // var $target = $(e.target),
-        // searchVal = $target.find('input').eq(0).val();
-        // $bookmarks.each(function(i,v){
-        //     while(v.children().length){
-
-        //     }
-        // });
-    };
+                    e.preventDefault();
+                     $('#btnSettings-'+currentTabContentId).click();
+                };
 
 
     /*================================================
@@ -435,6 +432,7 @@ $(function() {
                 $forms.eq(i).submit( formValidation );
                 $btnSettingTabs.eq(i).click( settingsBtnHandler );
                 $bookmarks.eq(i).change( selectOptionHandler );
+                $cancel.eq(i).click( searchHandler );
             }
             $TabsCollection.eq(i).click( tabsEventHandler );
         }
