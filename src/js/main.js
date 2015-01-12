@@ -5,7 +5,7 @@ $(function() {
     var getActiveTab,getActiveTabContent,settingsBtnHandler,addSelectOption,setHttp,
         isUrlValid,tabsEventHandler,removeInvalidClass,removeSelectOption,
         selectOptionHandler,formValidation,switchTabs,collectionClassHandler,
-        setIframeAndExpendButton,formInputsHandler,initTabs,importData,exportData,init,initEvent;
+        setIframeAndExpendButton,formInputsHandler,initTabs,importData,exportData,init,initEvent,searchHandler;
 
 
     // elements declaration
@@ -17,7 +17,8 @@ $(function() {
         $forms = $( '.frmSettings' ),
         $btnSettingTabs = $( '.tab .btn-settings' ),
         $currentTabContent,
-        $currentTab;
+        $currentTab,
+        $search = $('[role="search"]');
 
     // variables declaration
     var emptyfieldsetsCounter,
@@ -380,6 +381,21 @@ $(function() {
     };
 
 
+    /*================================================
+    SEARCH FUNCTION.
+    ================================================*/
+
+    searchHandler = function(e){
+        e.preventDefault();
+        // var $target = $(e.target),
+        // searchVal = $target.find('input').eq(0).val();
+        // $bookmarks.each(function(i,v){
+        //     while(v.children().length){
+
+        //     }
+        // });
+    };
+
 
     /*================================================
     HASH FUNCTION.
@@ -413,6 +429,7 @@ $(function() {
     };
 
     initEvent = function(){
+        $search.eq(0).on('submit', searchHandler);
         for (var i = 0; i < 4; i++) {
             if(i<2){
                 $forms.eq(i).submit( formValidation );
