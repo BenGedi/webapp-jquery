@@ -1,12 +1,6 @@
 
 $(function() {
     'use strict';
-    // functions declaration
-    var getActiveTab,getActiveTabContent,settingsBtnHandler,addSelectOption,setHttp,
-        isUrlValid,tabsEventHandler,removeInvalidClass,removeSelectOption,
-        selectOptionHandler,formValidation,switchTabs,collectionClassHandler,
-        setIframeAndExpendButton,formInputsHandler,initTabs,importData,exportData,init,initEvent,cancelHandler;
-
 
     // elements declaration
     var $TabsCollection = $('.tabs li a'),
@@ -31,7 +25,7 @@ $(function() {
     TABS FUNCTIONS.
     ================================================*/
 
-    getActiveTab = function($tabs){
+    var getActiveTab = function($tabs){
 
         for(var i = 0; i< $tabs.length ;i++){
             if ($tabs.eq(i).hasClass( 'tab-active' )){
@@ -40,7 +34,7 @@ $(function() {
         }
     };
 
-    getActiveTabContent = function($tabsContent){
+    var getActiveTabContent = function($tabsContent){
 
         for (var i = 0; i < $tabsContent.length; i++) {
             if($tabsContent.eq(i).hasClass( 'hidden' )){
@@ -59,7 +53,7 @@ $(function() {
     *  @param {element} tabContent - tab content.
     *  @param {string} tabContentId - tab content id.
     */
-    initTabs = function($tab ,$tabContent,tabContentId){
+    var initTabs = function($tab ,$tabContent,tabContentId){
         $currentTab = $tab;
         $currentTabContent = $tabContent;
         currentTabContentId = tabContentId ? tabContentId : $currentTabContent[0].id.slice(4);
@@ -70,7 +64,7 @@ $(function() {
     *
     *  @param {string} urlHashId - id from the target hash
     */
-    switchTabs = function(urlHashId){
+    var switchTabs = function(urlHashId){
 
         // $aTag is the tab target
         var $targtTabContent = $( '#tab-' + urlHashId ),
@@ -91,7 +85,7 @@ $(function() {
     HELPER FUNCTIONS.
     ================================================*/
 
-    removeInvalidClass = function($elm){
+    var removeInvalidClass = function($elm){
         if ($elm.hasClass( 'invalid' )){
             $elm.removeClass( 'invalid' );
         }
@@ -104,14 +98,14 @@ $(function() {
      * @param  {Array} node - Array of jQuery node elemet
      * @param  {String} cls - Class name
      */
-    collectionClassHandler = function(node,cls){
+    var collectionClassHandler = function(node,cls){
 
         $.each(node,function(key,val){
             val.toggleClass(cls);
         });
     };
 
-    settingsBtnHandler = function(e){
+    var settingsBtnHandler = function(e){
         var $target = $( e.target ),
         $setting = $( '#settings-' + currentTabContentId );
 
@@ -125,12 +119,12 @@ $(function() {
      *
      * @param  {string} val - target url
      */
-    setIframeAndExpendButton = function(val){
+    var setIframeAndExpendButton = function(val){
         $tabContentIframe.attr( 'src' , val );
         $btnExpand.attr( 'href', val );
     };
 
-    cancelHandler = function(e){
+    var cancelHandler = function(e){
         e.preventDefault();
         $('#btnSettings-'+currentTabContentId).click();
     };
@@ -146,7 +140,7 @@ $(function() {
      * @param  {String} name - option text.
      * @param  {String} url - url from the option value.
      */
-    addSelectOption = function($selectElement ,name,url){
+    var addSelectOption = function($selectElement ,name,url){
         var $option = $( '<option></option>' );
         url = setHttp(url);
         $option.attr( 'value',url );
@@ -154,7 +148,7 @@ $(function() {
         $selectElement.append( $option );
     };
 
-    selectOptionHandler = function(e){
+    var selectOptionHandler = function(e){
 
         e.preventDefault();
         var target = e.target;
@@ -167,7 +161,7 @@ $(function() {
      *
      * @param  {node element} selectElement - Select node element
      */
-    removeSelectOption = function($selectElement){
+    var removeSelectOption = function($selectElement){
 
         while ($selectElement.eq(0).children().length > 0) {
             $selectElement.eq(0).find( 'option:first' ).remove();
@@ -179,13 +173,13 @@ $(function() {
     FORM FUNCTIONS.
     ================================================*/
 
-    isUrlValid = function(str){
+    var isUrlValid = function(str){
 
         var re = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-zA-Z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
         return re.test(str);
 
     };
-    setHttp = function(url) {
+    var setHttp = function(url) {
             var re = /^(https?:\/\/www.)/i;
 
             if (re.test(url)) {
@@ -204,7 +198,7 @@ $(function() {
     *  @param {collection} $inputsName - collection of all form's url inputs
     *  @param {element} $bookmark - form select element.
     */
-    formInputsHandler = function($inputsName, $inputsUrl,$bookmark){
+    var formInputsHandler = function($inputsName, $inputsUrl,$bookmark){
 
         var nameVal , urlVal;
 
@@ -250,7 +244,7 @@ $(function() {
         }// end for
     };
 
-    formValidation = function(e){
+    var formValidation = function(e){
 
         e.preventDefault();
 
@@ -318,7 +312,7 @@ $(function() {
     /*================================================
     STORAGE FUNCTION.
     ================================================*/
-    importData = function(){
+    var importData = function(){
         if (Modernizr.localstorage) {
 
             // $tabs holds the 2 forms (quick-reports,my-foledr)
@@ -337,9 +331,7 @@ $(function() {
 
                     for (var i = 0; i < $inputTypeText.length; i++) {
                         arrText.push($inputTypeText.eq(i).val());
-                        console.log($inputTypeText.eq(i).val());
                         arrUrl.push($inputTypeUrl.eq(i).val());
-                        console.log($inputTypeUrl.eq(i).val());
                     }
 
                 formValues = [arrText, arrUrl];
@@ -352,7 +344,7 @@ $(function() {
         }
     };
 
-    exportData = function(){
+    var exportData = function(){
         if (Modernizr.localstorage) {
             if (localStorage.getItem('dataObj')) {
 
@@ -379,8 +371,6 @@ $(function() {
                             $formTexts.eq(j).val(text[j]);
                             $formUrls.eq(j).val(url[j]);
                         }
-
-                        // $tab.eq(i++).submit();
                     }
                 }
 
@@ -401,7 +391,7 @@ $(function() {
     * 1. 'click' event
     * 2. 'hashchange' event
     */
-    tabsEventHandler = function(e){
+    var tabsEventHandler = function(e){
 
            e.preventDefault();
 
@@ -420,7 +410,7 @@ $(function() {
            switchTabs(targetHashId);
     };
 
-    initEvent = function(){
+    var initEvent = function(){
         $search.eq(0).on('submit', cancelHandler);
         for (var i = 0; i < 4; i++) {
             if(i<2){
@@ -433,7 +423,7 @@ $(function() {
         }
     };
 
-    init = function(){
+    var init = function(){
         $(window).bind( 'hashchange' , tabsEventHandler );
         $notification.addClass( 'hidden' );
 
