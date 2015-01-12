@@ -1,5 +1,5 @@
 
-(function($) {
+$(function() {
     'use strict';
     // functions declaration
     var getActiveTab,getActiveTabContent,settingsBtnHandler,addSelectOption,setHttp,
@@ -437,7 +437,9 @@
     init = function(){
         $(window).bind( 'hashchange' , tabsEventHandler );
         $notification.addClass( 'hidden' );
+
         exportData();
+
         // initialize events
         initEvent();
 
@@ -465,5 +467,5 @@
 
 
     init();
-})(jQuery);
+});
 
