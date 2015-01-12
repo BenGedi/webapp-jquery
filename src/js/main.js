@@ -5,7 +5,7 @@ $(function() {
     var getActiveTab,getActiveTabContent,settingsBtnHandler,addSelectOption,setHttp,
         isUrlValid,tabsEventHandler,removeInvalidClass,removeSelectOption,
         selectOptionHandler,formValidation,switchTabs,collectionClassHandler,
-        setIframeAndExpendButton,formInputsHandler,initTabs,importData,exportData,init,initEvent,searchHandler;
+        setIframeAndExpendButton,formInputsHandler,initTabs,importData,exportData,init,initEvent,cancelHandler;
 
 
     // elements declaration
@@ -128,6 +128,11 @@ $(function() {
     setIframeAndExpendButton = function(val){
         $tabContentIframe.attr( 'src' , val );
         $btnExpand.attr( 'href', val );
+    };
+
+    cancelHandler = function(e){
+        e.preventDefault();
+        $('#btnSettings-'+currentTabContentId).click();
     };
 
     /*================================================
@@ -385,16 +390,6 @@ $(function() {
 
 
     /*================================================
-    SEARCH FUNCTION.
-    ================================================*/
-
-    searchHandler = function(e){
-                    e.preventDefault();
-                     $('#btnSettings-'+currentTabContentId).click();
-                };
-
-
-    /*================================================
     HASH FUNCTION.
     ================================================*/
 
@@ -426,13 +421,13 @@ $(function() {
     };
 
     initEvent = function(){
-        $search.eq(0).on('submit', searchHandler);
+        $search.eq(0).on('submit', cancelHandler);
         for (var i = 0; i < 4; i++) {
             if(i<2){
                 $forms.eq(i).submit( formValidation );
                 $btnSettingTabs.eq(i).click( settingsBtnHandler );
                 $bookmarks.eq(i).change( selectOptionHandler );
-                $cancel.eq(i).click( searchHandler );
+                $cancel.eq(i).click( cancelHandler );
             }
             $TabsCollection.eq(i).click( tabsEventHandler );
         }
